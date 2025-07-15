@@ -1,26 +1,21 @@
 import { createTheme } from '@mui/material/styles';
 
-// Definimos una paleta de colores adecuada para una aplicación educativa
-// Usando azul oscuro como color principal (transmite confianza y profesionalismo)
-// Verde como color secundario (representa crecimiento y aprendizaje)
-// Con acentos en tonos cálidos para llamar a la acción
-
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#1A3A6B', // Azul oscuro - Color principal, representa educación y confianza
+      main: '#1A3A6B',
       light: '#4C6CA2',
       dark: '#0D2349',
       contrastText: '#FFFFFF',
     },
     secondary: {
-      main: '#2E8B57', // Verde - Representa crecimiento y aprendizaje
+      main: '#2E8B57',
       light: '#5BAD85',
       dark: '#1B6B3E',
       contrastText: '#FFFFFF',
     },
     accent: {
-      main: '#F39C12', // Naranja - Color de acento para llamados a la acción
+      main: '#F39C12',
       light: '#F7B541',
       dark: '#D68910',
       contrastText: '#FFFFFF',

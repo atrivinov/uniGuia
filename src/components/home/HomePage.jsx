@@ -144,23 +144,23 @@ const HomePage = () => {
   // Datos de los desarrolladores (ficticios)
   const developers = [
     {
-      name: 'Ana Martínez',
+      name: 'Alexandra Triviño Vasquez',
       role: 'Frontend Developer',
       bio: 'Desarrolladora frontend apasionada por crear experiencias de usuario intuitivas y atractivas. Especialista en React y tecnologías modernas para aplicaciones web.',
       avatar: 'A'
     },
     {
-      name: 'Carlos Rodríguez',
-      role: 'Backend Developer',
+      name: 'Juan Pablo de la Ossa',
+      role: 'Data Engineer',
       bio: 'Ingeniero de software con amplia experiencia en desarrollo backend. Especialista en arquitecturas escalables y bases de datos. Amante del código limpio y bien estructurado.',
       avatar: 'C'
     },
     {
-      name: 'Sofía Gómez',
-      role: 'UI/UX Designer',
-      bio: 'Diseñadora de interfaces centradas en el usuario, con experiencia en investigación de usuarios y prototipado. Busca crear soluciones que sean tanto funcionales como estéticamente agradables.',
-      avatar: 'S'
-    }
+      name: 'Mariana Areiza',
+      role: 'Estudiante de Desarrollo de Software',
+      bio: 'Estudiante de desarrollo de software con un enfoque en el aprendizaje continuo y la mejora de habilidades. Apasionada por la programación y el desarrollo de aplicaciones web.',
+      avatar: 'M'
+    },
   ];
 
   // Características de la aplicación
@@ -273,7 +273,7 @@ const HomePage = () => {
           </Typography>
         </Box>
 
-        <Grid container spacing={4}>
+        <Grid container spacing={4} justifyContent="center">
           {features.map((feature, index) => (
             <Grid item xs={12} sm={6} md={3} key={index}>
               <motion.div
