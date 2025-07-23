@@ -4,8 +4,8 @@ import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import theme from './theme/theme';
 
-import HomePage from './components/home/HomePage';
-import UniversitiesPage from './components/universities/UniversitiesPage';
+import HomePage from './pages/home/HomePage';
+import UniversitiesPage from './pages/universities/UniversitiesPage';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 

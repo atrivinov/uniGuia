@@ -49,7 +49,7 @@ const mockUniversities = [
   {
     id: 1,
     name: 'Universidad Nacional',
-    logo: 'https://via.placeholder.com/150',
+    logo: 'https://natura.org.co/wp-content/uploads/2021/07/Universidad-Nacional-de-Colombia.jpg',
     description: 'Una de las instituciones educativas más prestigiosas del país, con una amplia oferta académica y reconocimiento internacional.',
     location: 'Bogotá',
     rating: 4.8,
