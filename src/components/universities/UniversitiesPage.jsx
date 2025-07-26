@@ -49,7 +49,7 @@ const mockUniversities = [
   {
     id: 1,
     name: 'Universidad Nacional',
-    logo: 'https://via.placeholder.com/150',
+    logo: 'https://natura.org.co/wp-content/uploads/2021/07/Universidad-Nacional-de-Colombia.jpg',
     description: 'Una de las instituciones educativas más prestigiosas del país, con una amplia oferta académica y reconocimiento internacional.',
     location: 'Bogotá',
     rating: 4.8,
@@ -61,7 +61,7 @@ const mockUniversities = [
   {
     id: 2,
     name: 'Universidad de los Andes',
-    logo: 'https://via.placeholder.com/150',
+    logo: 'https://www.funcionpublica.gov.co/documents/d/guest/logo_uniandes',
     description: 'Universidad privada reconocida por su excelencia académica y enfoque en investigación. Ofrece programas de pregrado y posgrado de alta calidad.',
     location: 'Bogotá',
     rating: 4.7,
@@ -73,7 +73,7 @@ const mockUniversities = [
   {
     id: 3,
     name: 'Universidad Javeriana',
-    logo: 'https://via.placeholder.com/150',
+    logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCHBYAlplUVcX_e0_0nRRgLjL-3FJ7nhcXig&s',
     description: 'Universidad privada con tradición jesuita, enfocada en la formación integral. Destaca por sus programas en ciencias sociales y de la salud.',
     location: 'Bogotá',
     rating: 4.6,
@@ -85,7 +85,7 @@ const mockUniversities = [
   {
     id: 4,
     name: 'Universidad del Rosario',
-    logo: 'https://via.placeholder.com/150',
+    logo: 'https://urosario.edu.co/sites/default/files/2025-04/logo_vertical_ur_rojo.png',
     description: 'Universidad tradicional con más de tres siglos de historia, reconocida por sus facultades de derecho y medicina.',
     location: 'Bogotá',
     rating: 4.5,
@@ -97,7 +97,7 @@ const mockUniversities = [
   {
     id: 5,
     name: 'Universidad EAFIT',
-    logo: 'https://via.placeholder.com/150',
+    logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWhDDW-rRVhEI-yFe2-yIdb3Wz-KphcAa8tg&s',
     description: 'Universidad privada reconocida por sus programas en negocios, ingeniería y diseño. Cuenta con un moderno campus y proyección internacional.',
     location: 'Medellín',
     rating: 4.6,
@@ -109,7 +109,7 @@ const mockUniversities = [
   {
     id: 6,
     name: 'Universidad del Valle',
-    logo: 'https://via.placeholder.com/150',
+    logo: ' https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Univalle.svg/1200px-Univalle.svg.png',
     description: 'Universidad pública reconocida por su excelencia académica y contribuciones a la investigación científica y cultural.',
     location: 'Cali',
     rating: 4.5,
@@ -144,6 +144,7 @@ const AddProgramForm = ({ open, handleClose }) => {
   const [modalities, setModalities] = useState([]);
   const [tuition, setTuition] = useState('');
   const [studyArea, setStudyArea] = useState('');
+  const [modality, setModality] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -201,30 +202,42 @@ const AddProgramForm = ({ open, handleClose }) => {
                 required
                 helperText="Nombre completo de la carrera"
               />
-            </Grid>
+            </Grid >
             <Grid item xs={12} md={6}>
               <FormControl fullWidth required>
-                <InputLabel id="location-label">Ciudad</InputLabel>
+                <InputLabel id="location-label"shrink >Ciudad </InputLabel>
                 <Select
                   labelId="location-label"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   label="Ciudad"
+                  displayEmpty
+                  renderValue={(selected) =>
+                      selected ? selected : <em style={{ color: '#888' }}>Selecciona una ciudad</em>
+                    }
+                  sx={{ minHeight: 56 }}
                 >
+                  <MenuItem value="" disabled>Selecciona una ciudad</MenuItem>
                   {cities.map((city) => (
                     <MenuItem key={city} value={city}>{city}</MenuItem>
                   ))}
                 </Select>
               </FormControl>
             </Grid>
+
             <Grid item xs={12} md={6}>
               <FormControl fullWidth required>
-                <InputLabel id="study-area-label">Área de estudio</InputLabel>
+                <InputLabel id="study-area-label" shrink >Área de estudio</InputLabel>
                 <Select
                   labelId="study-area-label"
                   value={studyArea}
                   onChange={(e) => setStudyArea(e.target.value)}
                   label="Área de estudio"
+                  displayEmpty
+                  sx={{ minHeight: 56 }}
+                  renderValue={(selected) =>
+                    selected ? selected : <em style={{ color: '#888' }}>Selecciona un área</em>
+                  }
                 >
                   {studyAreas.map((area) => (
                     <MenuItem key={area} value={area}>{area}</MenuItem>
@@ -232,31 +245,42 @@ const AddProgramForm = ({ open, handleClose }) => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12}>
-              <FormControl fullWidth required>
-                <InputLabel id="modality-label">Modalidad</InputLabel>
-                <Select
-                  labelId="modality-label"
-                  multiple
-                  value={modalities}
-                  onChange={(e) => setModalities(e.target.value)}
-                  label="Modalidad"
-                  renderValue={(selected) => (
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {selected.map((value) => (
-                        <Chip key={value} label={value} />
-                      ))}
-                    </Box>
-                  )}
-                >
-                  {modalityOptions.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
+
+            <Grid item xs={12} md={6}>
+                <FormControl fullWidth required variant="outlined">
+                  <InputLabel id="modality-label" shrink > Modalidad</InputLabel>
+                  <Select
+                    labelId="modality-label"
+                    id="modality-select"
+                    value={modality}
+                    onChange={(e) => setModality(e.target.value)}
+                    label="Modalidad"
+                    displayEmpty
+                    renderValue={(selected) =>
+                      selected ? selected : <em style={{ color: '#888' }}>Selecciona una modalidad</em>
+                    }
+                    sx={{
+                      minHeight: 56,
+                      '& .MuiSelect-select:focus': {
+                        backgroundColor: 'transparent',
+                      },
+                    }}
+                  >
+                    <MenuItem value="">
+                      <em>Selecciona una modalidad</em>
                     </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
+                    {modalityOptions.map((option) => (
+                      <MenuItem key={option} value={option}>
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+
+
+    
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth

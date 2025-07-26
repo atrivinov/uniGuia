@@ -55,13 +55,7 @@ const Footer = () => {
             </Link>
             <Link component={RouterLink} to="/universidades" color="inherit" display="block" sx={{ mb: 1 }}>
               Universidades
-            </Link>
-            <Link component={RouterLink} to="/#nosotros" color="inherit" display="block" sx={{ mb: 1 }}>
-              Sobre Nosotros
-            </Link>
-            <Link component={RouterLink} to="/#contacto" color="inherit" display="block">
-              Contacto
-            </Link>
+            </Link>            
           </Grid>
 
           <Grid item xs={12} sm={4}>

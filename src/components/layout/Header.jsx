@@ -1,104 +1,33 @@
 import React, { useState } from 'react';
-import { 
-  AppBar, 
-  Toolbar, 
-  Typography, 
-  Button, 
-  Box, 
-  Container, 
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Box,
+  Container,
   IconButton,
-  Menu,
-  MenuItem,
-  useMediaQuery,
   Drawer,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemButton
+  useMediaQuery
 } from '@mui/material';
 import { Menu as MenuIcon } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
+import { Link as ScrollLink } from 'react-scroll'; // 👈 Importamos react-scroll
 import { useTheme } from '@mui/material/styles';
 
 const Header = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-
-  const handleLoginMenuClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
 
   const handleDrawerToggle = () => {
     setDrawerOpen(!drawerOpen);
   };
 
   const navItems = [
-    { name: 'Inicio', path: '/' },
-    { name: 'Universidades', path: '/universidades' }
+    { name: 'Inicio', type: 'scroll', to: 'inicio' },
+    { name: 'Universidades', type: 'route', path: '/universidades' }
   ];
-
-  const menuItems = (
-    <>
-      <Button color="inherit" onClick={handleLoginMenuClick}>Ingresar</Button>
-      <Menu
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleMenuClose}
-        MenuListProps={{
-          'aria-labelledby': 'basic-button',
-        }}
-      >
-        <MenuItem onClick={handleMenuClose} component={RouterLink} to="/#login">Iniciar Sesión</MenuItem>
-        <MenuItem onClick={handleMenuClose} component={RouterLink} to="/#registro">Registrarse</MenuItem>
-      </Menu>
-    </>
-  );
-
-  const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
-      <Typography variant="h6" sx={{ my: 2, color: theme.palette.primary.main }}>
-        uniGuia
-      </Typography>
-      <List>
-        {navItems.map((item) => (
-          <ListItem key={item.name} disablePadding>
-            <ListItemButton
-              sx={{ textAlign: 'center' }}
-              component={RouterLink}
-              to={item.path}
-            >
-              <ListItemText primary={item.name} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-        <ListItem disablePadding>
-          <ListItemButton
-            sx={{ textAlign: 'center' }}
-            component={RouterLink}
-            to="/#login"
-          >
-            <ListItemText primary="Iniciar Sesión" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton
-            sx={{ textAlign: 'center' }}
-            component={RouterLink}
-            to="/#registro"
-          >
-            <ListItemText primary="Registrarse" />
-          </ListItemButton>
-        </ListItem>
-      </List>
-    </Box>
-  );
 
   return (
     <AppBar position="sticky" color="default" elevation={1} sx={{ backgroundColor: 'white' }}>
@@ -139,25 +68,38 @@ const Header = () => {
                 open={drawerOpen}
                 onClose={handleDrawerToggle}
               >
-                {drawer}
+                {/* Aquí podrías agregar navegación para móvil */}
               </Drawer>
             </>
           ) : (
             <>
               <Box sx={{ display: 'flex', flexGrow: 0, gap: 2 }}>
-                {navItems.map((item) => (
-                  <Button 
-                    key={item.name} 
-                    component={RouterLink}
-                    to={item.path}
-                    color="inherit"
-                  >
-                    {item.name}
-                  </Button>
-                ))}
+                {navItems.map((item) =>
+                  item.type === 'scroll' ? (
+                    <ScrollLink
+                      key={item.name}
+                      to={item.to}
+                      smooth={true}
+                      duration={500}
+                      offset={-70}
+                      style={{ cursor: 'pointer', textDecoration: 'none' }}
+                    >
+                      <Button color="inherit">{item.name}</Button>
+                    </ScrollLink>
+                  ) : (
+                    <Button
+                      key={item.name}
+                      component={RouterLink}
+                      to={item.path}
+                      color="inherit"
+                    >
+                      {item.name}
+                    </Button>
+                  )
+                )}
               </Box>
               <Box sx={{ display: 'flex', ml: 2 }}>
-                {menuItems}
+                {/*  */}
               </Box>
             </>
           )}
