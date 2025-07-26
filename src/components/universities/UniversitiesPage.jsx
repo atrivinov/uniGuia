@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Container,
@@ -38,92 +38,13 @@ import {
   Dns,
   AttachMoney,
   Language,
-  ExpandMore,
-  ExpandLess
 } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import { motion } from 'framer-motion';
+import { fetchUniversities } from '../../api/universities';
 
-// Datos de ejemplo para las universidades
-const mockUniversities = [
-  {
-    id: 1,
-    name: 'Universidad Nacional',
-    logo: 'https://natura.org.co/wp-content/uploads/2021/07/Universidad-Nacional-de-Colombia.jpg',
-    description: 'Una de las instituciones educativas más prestigiosas del país, con una amplia oferta académica y reconocimiento internacional.',
-    location: 'Bogotá',
-    rating: 4.8,
-    programs: ['Ingeniería de Sistemas', 'Medicina', 'Derecho', 'Economía'],
-    tuitionRange: '$1,000,000 - $3,000,000',
-    website: 'www.universidad-nacional.edu',
-    modality: ['Presencial', 'Virtual']
-  },
-  {
-    id: 2,
-    name: 'Universidad de los Andes',
-    logo: 'https://www.funcionpublica.gov.co/documents/d/guest/logo_uniandes',
-    description: 'Universidad privada reconocida por su excelencia académica y enfoque en investigación. Ofrece programas de pregrado y posgrado de alta calidad.',
-    location: 'Bogotá',
-    rating: 4.7,
-    programs: ['Administración de Empresas', 'Ingeniería Civil', 'Psicología', 'Arquitectura'],
-    tuitionRange: '$8,000,000 - $15,000,000',
-    website: 'www.uniandes.edu',
-    modality: ['Presencial']
-  },
-  {
-    id: 3,
-    name: 'Universidad Javeriana',
-    logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCHBYAlplUVcX_e0_0nRRgLjL-3FJ7nhcXig&s',
-    description: 'Universidad privada con tradición jesuita, enfocada en la formación integral. Destaca por sus programas en ciencias sociales y de la salud.',
-    location: 'Bogotá',
-    rating: 4.6,
-    programs: ['Comunicación Social', 'Medicina', 'Filosofía', 'Ingeniería Industrial'],
-    tuitionRange: '$7,000,000 - $13,000,000',
-    website: 'www.javeriana.edu',
-    modality: ['Presencial', 'Semipresencial']
-  },
-  {
-    id: 4,
-    name: 'Universidad del Rosario',
-    logo: 'https://urosario.edu.co/sites/default/files/2025-04/logo_vertical_ur_rojo.png',
-    description: 'Universidad tradicional con más de tres siglos de historia, reconocida por sus facultades de derecho y medicina.',
-    location: 'Bogotá',
-    rating: 4.5,
-    programs: ['Derecho', 'Relaciones Internacionales', 'Medicina', 'Administración'],
-    tuitionRange: '$7,500,000 - $14,000,000',
-    website: 'www.urosario.edu',
-    modality: ['Presencial']
-  },
-  {
-    id: 5,
-    name: 'Universidad EAFIT',
-    logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWhDDW-rRVhEI-yFe2-yIdb3Wz-KphcAa8tg&s',
-    description: 'Universidad privada reconocida por sus programas en negocios, ingeniería y diseño. Cuenta con un moderno campus y proyección internacional.',
-    location: 'Medellín',
-    rating: 4.6,
-    programs: ['Negocios Internacionales', 'Ingeniería de Sistemas', 'Diseño', 'Finanzas'],
-    tuitionRange: '$7,000,000 - $12,000,000',
-    website: 'www.eafit.edu',
-    modality: ['Presencial', 'Virtual']
-  },
-  {
-    id: 6,
-    name: 'Universidad del Valle',
-    logo: ' https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Univalle.svg/1200px-Univalle.svg.png',
-    description: 'Universidad pública reconocida por su excelencia académica y contribuciones a la investigación científica y cultural.',
-    location: 'Cali',
-    rating: 4.5,
-    programs: ['Biología', 'Ingeniería Eléctrica', 'Literatura', 'Música'],
-    tuitionRange: '$800,000 - $2,500,000',
-    website: 'www.univalle.edu',
-    modality: ['Presencial']
-  }
-];
-
-// Lista de ciudades para el filtro
 const cities = ['Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Cartagena', 'Bucaramanga'];
 
-// Lista de áreas de estudio para el filtro
 const studyAreas = [
   'Ingeniería',
   'Medicina y Ciencias de la Salud',
@@ -326,8 +247,23 @@ const AddProgramForm = ({ open, handleClose }) => {
 
 // Componente principal de la página de universidades
 const UniversitiesPage = () => {
+  // Estado para modal de detalle
+  const [selectedUniversity, setSelectedUniversity] = useState(null);
+  const handleOpenDetail = (university) => setSelectedUniversity(university);
+  const handleCloseDetail = () => setSelectedUniversity(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  // Estado para universidades obtenidas por fetch
+  const [universities, setUniversities] = useState([]);
+  useEffect(() => {
+    fetchUniversities()
+      .then(data => {
+        console.log('Universidades',data)
+        setUniversities(data)
+      })
+      .catch(() => setUniversities([]));
+  }, []);
 
   // Estados para los filtros
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
@@ -337,29 +273,19 @@ const UniversitiesPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [, setTuitionRange] = useState([0, 15000000]);
   const [showAddProgram, setShowAddProgram] = useState(false);
-  
-  // Estado para las tarjetas expandidas
-  const [expandedCards, setExpandedCards] = useState({});
 
   // Filtrar universidades según los criterios
-  const filteredUniversities = mockUniversities.filter((university) => {
+  const filteredUniversities = universities.filter((university) => {
     const matchesCity = !selectedCity || university.location === selectedCity;
-    const matchesModality = !selectedModality || university.modality.includes(selectedModality);
+    const matchesModality = !selectedModality || university.modality?.includes(selectedModality);
     const matchesSearch = !searchQuery || 
       university.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      university.programs.some(prog => prog.toLowerCase().includes(searchQuery.toLowerCase()));
+      (university.programs && university.programs.some(prog => prog.toLowerCase().includes(searchQuery.toLowerCase())));
     // Para el área de estudio sería necesario más datos, en este mock usamos una lógica simplificada
-    const matchesArea = !selectedArea || university.programs.some(prog => prog.includes(selectedArea.split(' ')[0]));
+    const matchesArea = !selectedArea || (university.programs && university.programs.some(prog => prog.includes(selectedArea.split(' ')[0])));
     
     return matchesCity && matchesModality && matchesSearch && matchesArea;
   });
-
-  const handleToggleCard = (id) => {
-    setExpandedCards(prev => ({
-      ...prev,
-      [id]: !prev[id]
-    }));
-  };
 
   const toggleFilterDrawer = () => {
     setFilterDrawerOpen(!filterDrawerOpen);
@@ -542,141 +468,155 @@ const UniversitiesPage = () => {
 
         {/* Lista de universidades */}
         {filteredUniversities.length > 0 ? (
-          <Grid container spacing={4}>
+          <Grid container spacing={4} justifyContent="center">
             {filteredUniversities.map((university) => (
-              <Grid item xs={12} key={university.id}>
+              <Grid item xs={12} sm={6} md={4} lg={3} key={university.id} sx={{ display: 'flex', justifyContent: 'center' }}>
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4 }}
                 >
-                  <Card>
-                    <CardContent>
-                      <Grid container spacing={3}>
-                        <Grid item xs={12} sm={3} md={2}>
+                  <Card sx={{ minWidth: 280, maxWidth: 320, width: '100%', height: 260, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 3 }}>
+                    <CardContent sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', p: 0, height: '100%' }}>
+                      <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                        <Box sx={{ pt: 2, pb: 1, width: '100%', display: 'flex', justifyContent: 'center' }}>
                           <CardMedia
                             component="img"
                             image={university.logo}
                             alt={university.name}
-                            sx={{ 
-                              borderRadius: 1,
-                              objectFit: 'contain',
-                              height: 100,
-                              width: '100%',
-                              mb: { xs: 2, sm: 0 }
-                            }}
+                            sx={{ borderRadius: 1, objectFit: 'contain', height: 70, width: 90, background: '#f5f5f5', boxShadow: 1 }}
                           />
-                        </Grid>
-                        <Grid item xs={12} sm={9} md={10}>
-                          <Box display="flex" justifyContent="space-between" alignItems="flex-start">
-                            <Box>
-                              <Typography variant="h5" component="h3" gutterBottom>
-                                {university.name}
-                              </Typography>
-                              <Box display="flex" alignItems="center" gap={1} mb={1}>
-                                <LocationOn fontSize="small" color="action" />
-                                <Typography variant="body2" color="text.secondary">
-                                  {university.location}
-                                </Typography>
-                              </Box>
-                              <Box display="flex" alignItems="center" gap={1}>
-                                <Rating
-                                  value={university.rating}
-                                  precision={0.1}
-                                  readOnly
-                                  size="small"
-                                />
-                                <Typography variant="body2" color="text.secondary">
-                                  {university.rating}
-                                </Typography>
-                              </Box>
-                            </Box>
-                            <Button
-                              endIcon={expandedCards[university.id] ? <ExpandLess /> : <ExpandMore />}
-                              onClick={() => handleToggleCard(university.id)}
-                            >
-                              {expandedCards[university.id] ? 'Ver menos' : 'Ver más'}
-                            </Button>
-                          </Box>
-
-                          <Box mt={1}>
-                            <Typography variant="body1" paragraph>
-                              {expandedCards[university.id] ? 
-                                university.description : 
-                                `${university.description.substring(0, 120)}${university.description.length > 120 ? '...' : ''}`
-                              }
-                            </Typography>
-                          </Box>
-
-                          {expandedCards[university.id] && (
-                            <Box mt={2}>
-                              <Divider sx={{ mb: 2 }} />
-                              <Grid container spacing={2}>
-                                <Grid item xs={12} md={6}>
-                                  <Box display="flex" alignItems="flex-start" gap={1}>
-                                    <School fontSize="small" color="primary" />
-                                    <Box>
-                                      <Typography variant="subtitle2" fontWeight="bold">
-                                        Programas destacados
-                                      </Typography>
-                                      <Box display="flex" gap={0.5} flexWrap="wrap" mt={0.5}>
-                                        {university.programs.map((program) => (
-                                          <Chip 
-                                            key={program} 
-                                            label={program} 
-                                            size="small" 
-                                            sx={{ mb: 0.5 }} 
-                                          />
-                                        ))}
-                                      </Box>
-                                    </Box>
-                                  </Box>
-                                </Grid>
-                                <Grid item xs={12} md={6}>
-                                  <Box display="flex" alignItems="center" gap={1} mb={1}>
-                                    <AttachMoney fontSize="small" color="primary" />
-                                    <Box>
-                                      <Typography variant="subtitle2" fontWeight="bold">
-                                        Rango de matrícula
-                                      </Typography>
-                                      <Typography variant="body2">
-                                        {university.tuitionRange} COP por semestre
-                                      </Typography>
-                                    </Box>
-                                  </Box>
-                                  <Box display="flex" alignItems="center" gap={1} mb={1}>
-                                    <Dns fontSize="small" color="primary" />
-                                    <Box>
-                                      <Typography variant="subtitle2" fontWeight="bold">
-                                        Modalidades
-                                      </Typography>
-                                      <Typography variant="body2">
-                                        {university.modality.join(', ')}
-                                      </Typography>
-                                    </Box>
-                                  </Box>
-                                  <Box display="flex" alignItems="center" gap={1}>
-                                    <Language fontSize="small" color="primary" />
-                                    <Box>
-                                      <Typography variant="subtitle2" fontWeight="bold">
-                                        Sitio web
-                                      </Typography>
-                                      <Link href={`https://${university.website}`} target="_blank" rel="noopener noreferrer">
-                                        <Typography variant="body2">
-                                          {university.website}
-                                        </Typography>
-                                      </Link>
-                                    </Box>
-                                  </Box>
-                                </Grid>
-                              </Grid>
-                            </Box>
-                          )}
-                        </Grid>
-                      </Grid>
+                        </Box>
+                        <Typography variant="h6" component="h3" gutterBottom align="center" sx={{ mt: 1 }}>
+                          {university.name}
+                        </Typography>
+                        <Box display="flex" alignItems="center" gap={1} justifyContent="center" sx={{ mb: 2 }}>
+                          <Rating value={university.rating} precision={0.1} readOnly size="small" />
+                          <Typography variant="body2" color="text.secondary">
+                            {university.rating}
+                          </Typography>
+                        </Box>
+                        <Button variant="outlined" size="small" sx={{ mt: 'auto', mb: 2 }} onClick={() => handleOpenDetail(university)}>
+                          Ver más
+                        </Button>
+                      </Box>
                     </CardContent>
                   </Card>
                 </motion.div>
+  {/* Modal de detalle de universidad */}
+  {/* Overlay claro y opaco sobre la página cuando la modal está abierta */}
+  {selectedUniversity && (
+    <Box
+      sx={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        bgcolor: 'rgba(255,255,255,0.6)',
+        zIndex: 1200
+      }}
+    />
+  )}
+  {selectedUniversity && (
+    <Dialog 
+      open={!!selectedUniversity} 
+      onClose={handleCloseDetail} 
+      fullWidth 
+      maxWidth="md"
+      hideBackdrop={true}
+      sx={{ boxShadow: 'none' }}
+      slotProps={{ paper: { sx: { boxShadow: 'none', background: 'white' } } }}
+    >
+      <DialogTitle>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Typography variant="h5">{selectedUniversity.name}</Typography>
+          <IconButton edge="end" color="inherit" onClick={handleCloseDetail} aria-label="close">
+            <Close />
+          </IconButton>
+        </Box>
+      </DialogTitle>
+      <DialogContent>
+        <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} gap={3} alignItems="flex-start">
+          <CardMedia
+            component="img"
+            image={selectedUniversity.logo}
+            alt={selectedUniversity.name}
+            sx={{ borderRadius: 2, objectFit: 'contain', height: 120, width: 160, background: '#f5f5f5', boxShadow: 'none', mb: { xs: 2, md: 0 } }}
+          />
+          <Box flex={1}>
+            <Typography variant="subtitle1" gutterBottom>
+              <LocationOn fontSize="small" color="action" /> {selectedUniversity.location}
+            </Typography>
+            <Typography variant="body1" paragraph>
+              {selectedUniversity.description}
+            </Typography>
+            <Box display="flex" alignItems="center" gap={1} mb={2}>
+              <Rating value={selectedUniversity.rating} precision={0.1} readOnly size="small" />
+              <Typography variant="body2" color="text.secondary">
+                {selectedUniversity.rating}
+              </Typography>
+            </Box>
+            <Divider sx={{ mb: 2 }} />
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <Box display="flex" alignItems="flex-start" gap={1}>
+                  <School fontSize="small" color="primary" />
+                  <Box>
+                    <Typography variant="subtitle2" fontWeight="bold">
+                      Programas destacados
+                    </Typography>
+                    <Box display="flex" gap={0.5} flexWrap="wrap" mt={0.5}>
+                      {selectedUniversity.programs.map((program) => (
+                        <Chip key={program} label={program} size="small" sx={{ mb: 0.5 }} />
+                      ))}
+                    </Box>
+                  </Box>
+                </Box>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Box display="flex" alignItems="center" gap={1} mb={1}>
+                  <AttachMoney fontSize="small" color="primary" />
+                  <Box>
+                    <Typography variant="subtitle2" fontWeight="bold">
+                      Rango de matrícula
+                    </Typography>
+                    <Typography variant="body2">
+                      {selectedUniversity.tuitionRange} COP por semestre
+                    </Typography>
+                  </Box>
+                </Box>
+                <Box display="flex" alignItems="center" gap={1} mb={1}>
+                  <Dns fontSize="small" color="primary" />
+                  <Box>
+                    <Typography variant="subtitle2" fontWeight="bold">
+                      Modalidades
+                    </Typography>
+                    <Typography variant="body2">
+                      {selectedUniversity.modality.join(', ')}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Box display="flex" alignItems="center" gap={1}>
+                  <Language fontSize="small" color="primary" />
+                  <Box>
+                    <Typography variant="subtitle2" fontWeight="bold">
+                      Sitio web
+                    </Typography>
+                    <Link href={`https://${selectedUniversity.website}`} target="_blank" rel="noopener noreferrer">
+                      <Typography variant="body2">
+                        {selectedUniversity.website}
+                      </Typography>
+                    </Link>
+                  </Box>
+                </Box>
+              </Grid>
+            </Grid>
+          </Box>
+        </Box>
+      </DialogContent>
+    </Dialog>
+  )}
               </Grid>
             ))}
           </Grid>
