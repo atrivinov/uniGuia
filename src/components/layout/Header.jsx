@@ -12,7 +12,6 @@ import {
 } from '@mui/material';
 import { Menu as MenuIcon } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
-import { Link as ScrollLink } from 'react-scroll'; // 👈 Importamos react-scroll
 import { useTheme } from '@mui/material/styles';
 
 const Header = () => {
@@ -25,8 +24,8 @@ const Header = () => {
   };
 
   const navItems = [
-    { name: 'Inicio', type: 'scroll', to: 'inicio' },
-    { name: 'Universidades', type: 'route', path: '/universidades' }
+    { name: 'Inicio', path: '/' },
+    { name: 'Universidades', path: '/universidades' }
   ];
 
   return (
@@ -68,38 +67,25 @@ const Header = () => {
                 open={drawerOpen}
                 onClose={handleDrawerToggle}
               >
-                {/* Aquí podrías agregar navegación para móvil */}
+                {/* Puedes agregar navegación para móvil aquí si lo necesitas */}
               </Drawer>
             </>
           ) : (
             <>
               <Box sx={{ display: 'flex', flexGrow: 0, gap: 2 }}>
-                {navItems.map((item) =>
-                  item.type === 'scroll' ? (
-                    <ScrollLink
-                      key={item.name}
-                      to={item.to}
-                      smooth={true}
-                      duration={500}
-                      offset={-70}
-                      style={{ cursor: 'pointer', textDecoration: 'none' }}
-                    >
-                      <Button color="inherit">{item.name}</Button>
-                    </ScrollLink>
-                  ) : (
-                    <Button
-                      key={item.name}
-                      component={RouterLink}
-                      to={item.path}
-                      color="inherit"
-                    >
-                      {item.name}
-                    </Button>
-                  )
-                )}
+                {navItems.map((item) => (
+                  <Button
+                    key={item.name}
+                    component={RouterLink}
+                    to={item.path}
+                    color="inherit"
+                  >
+                    {item.name}
+                  </Button>
+                ))}
               </Box>
               <Box sx={{ display: 'flex', ml: 2 }}>
-                {/*  */}
+                {/* Puedes añadir más opciones aquí */}
               </Box>
             </>
           )}
