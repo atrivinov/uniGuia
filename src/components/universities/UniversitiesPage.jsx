@@ -420,37 +420,48 @@ const UniversitiesPage = () => {
 
       {/* Sección de búsqueda y filtros */}
       <Container maxWidth="lg" sx={{ mt: -4 }}>
-        <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} md={8}>
-              <TextField
-                fullWidth
-                placeholder="Busca universidades o programas..."
-                variant="outlined"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Search />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Button
-                variant="outlined"
-                color="primary"
-                fullWidth
-                startIcon={<FilterList />}
-                onClick={toggleFilterDrawer}
-              >
-                Filtrar resultados
-              </Button>
-            </Grid>
-          </Grid>
-        </Paper>
+              <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
+                <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} gap={2}>
+                  <TextField
+                    fullWidth
+                    placeholder="Busca universidades o programas..."
+                    variant="outlined"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Search />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{
+                      flexGrow: 1,
+                      minWidth: '300px',
+                      '& input::placeholder': {
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                      },
+                    }}
+                  />
+                  <Button
+                    variant="outlined"
+                    startIcon={<FilterList />}
+                    onClick={toggleFilterDrawer}
+                    sx={{
+                      height: '50px',
+                      fontSize: '1rem',
+                      fontWeight: 'bold',
+                      borderRadius: '12px',
+                      textTransform: 'none',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    Filtrar resultados
+                  </Button>
+                </Box>
+              </Paper>
       </Container>
 
       {/* Resultados de la búsqueda */}

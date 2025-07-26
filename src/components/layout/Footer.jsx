@@ -4,6 +4,7 @@ import { Facebook, Twitter, Instagram, LinkedIn, School } from '@mui/icons-mater
 import { Link as RouterLink } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 
+
 const Footer = () => {
   const theme = useTheme();
   const year = new Date().getFullYear();
@@ -31,19 +32,28 @@ const Footer = () => {
               Ayudamos a estudiantes a encontrar su camino universitario ideal a través de recomendaciones personalizadas.
             </Typography>
             <Box display="flex" gap={1}>
-              <IconButton color="inherit" aria-label="facebook">
-                <Facebook />
-              </IconButton>
-              <IconButton color="inherit" aria-label="twitter">
-                <Twitter />
-              </IconButton>
-              <IconButton color="inherit" aria-label="instagram">
-                <Instagram />
-              </IconButton>
-              <IconButton color="inherit" aria-label="linkedin">
-                <LinkedIn />
-              </IconButton>
+              <a href="https://facebook.com/tuPagina" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit' }}>
+                <IconButton color="inherit" aria-label="facebook">
+                  <Facebook />
+                </IconButton>
+              </a>
+              <a href="https://twitter.com/tuPagina" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit' }}>
+                <IconButton color="inherit" aria-label="twitter">
+                  <Twitter />
+                </IconButton>
+              </a>
+              <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit' }}>
+                <IconButton color="inherit" aria-label="instagram">
+                  <Instagram />
+                </IconButton>
+              </a>
+              <a href="https://linkedin.com/in/tuPagina" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit' }}>
+                <IconButton color="inherit" aria-label="linkedin">
+                  <LinkedIn />
+                </IconButton>
+              </a>
             </Box>
+
           </Grid>
 
           <Grid item xs={12} sm={4}>

@@ -14,7 +14,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 import React from 'react';
-import { Element } from 'react-scroll';
+
 
 
 const HomePage = () => {
