@@ -42,6 +42,7 @@ import {
 import { useTheme } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 import { fetchUniversities } from '../../api/universities';
+import { addUniversity } from '../../api/universities';
 
 const cities = ['Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Cartagena', 'Bucaramanga'];
 
@@ -58,31 +59,55 @@ const studyAreas = [
 
 // Componente para el formulario de añadir nueva carrera
 const AddProgramForm = ({ open, handleClose }) => {
-  const [universityName, setUniversityName] = useState('');
-  const [programName, setProgramName] = useState('');
-  const [location, setLocation] = useState('');
-  const [description, setDescription] = useState('');
-  const [modalities, setModalities] = useState([]);
-  const [tuition, setTuition] = useState('');
-  const [studyArea, setStudyArea] = useState('');
-  const [modality, setModality] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Aquí iría la lógica para guardar el programa (que en este caso solo es maquetado)
-    console.log({
-      universityName,
-      programName,
-      location,
-      description,
-      modalities,
-      tuition,
-      studyArea
-    });
-    handleClose();
-  };
+  // Estados para los campos de universidad
+  const [name, setName] = useState('');
+  const [logo, setLogo] = useState('');
+  const [description, setDescription] = useState('');
+  const [location, setLocation] = useState('');
+  const [rating, setRating] = useState(0);
+  const [programs, setPrograms] = useState('');
+  const [tuitionRange, setTuitionRange] = useState('');
+  const [website, setWebsite] = useState('');
+  const [modality, setModality] = useState([]);
 
   const modalityOptions = ['Presencial', 'Virtual', 'Semipresencial', 'A distancia'];
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const newUniversity = {
+      name,
+      logo,
+      description,
+      location,
+      rating,
+      programs: programs.split(',').map(p => p.trim()),
+      tuitionRange,
+      website,
+      modality,
+    };
+    try {
+      await addUniversity(newUniversity);
+      // Refrescar la lista de universidades desde la API
+      if (typeof window.refreshUniversities === 'function') {
+        await window.refreshUniversities();
+      }
+      // Limpiar campos
+      setName('');
+      setLogo('');
+      setDescription('');
+      setLocation('');
+      setRating(0);
+      setPrograms('');
+      setTuitionRange('');
+      setWebsite('');
+      setModality([]);
+      alert('Universidad guardada exitosamente');
+      handleClose();
+    } catch (error) {
+      alert('Error al guardar la universidad');
+    }
+  };
 
   return (
     <Dialog 
@@ -93,7 +118,7 @@ const AddProgramForm = ({ open, handleClose }) => {
     >
       <DialogTitle>
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Typography variant="h5">Añadir nueva carrera universitaria</Typography>
+          <Typography variant="h5">Añadir nueva universidad</Typography>
           <IconButton edge="end" color="inherit" onClick={handleClose} aria-label="close">
             <Close />
           </IconButton>
@@ -105,28 +130,30 @@ const AddProgramForm = ({ open, handleClose }) => {
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
-                label="Universidad"
+                label="Nombre de la universidad"
                 variant="outlined"
-                value={universityName}
-                onChange={(e) => setUniversityName(e.target.value)}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 required
-                helperText="Nombre de la universidad que ofrece el programa"
+                helperText="Nombre completo de la universidad"
+                InputLabelProps={{ shrink: true }}
+                sx={{ minHeight: 56 }}
               />
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
-                label="Nombre del programa"
+                label="Logo (URL)"
                 variant="outlined"
-                value={programName}
-                onChange={(e) => setProgramName(e.target.value)}
+                value={logo}
+                onChange={(e) => setLogo(e.target.value)}
                 required
-                helperText="Nombre completo de la carrera"
+                helperText="URL de la imagen del logo"
               />
-            </Grid >
+            </Grid>
             <Grid item xs={12} md={6}>
               <FormControl fullWidth required>
-                <InputLabel id="location-label"shrink >Ciudad </InputLabel>
+                <InputLabel id="location-label" shrink>Ciudad</InputLabel>
                 <Select
                   labelId="location-label"
                   value={location}
@@ -134,8 +161,8 @@ const AddProgramForm = ({ open, handleClose }) => {
                   label="Ciudad"
                   displayEmpty
                   renderValue={(selected) =>
-                      selected ? selected : <em style={{ color: '#888' }}>Selecciona una ciudad</em>
-                    }
+                    selected ? selected : <em style={{ color: '#888' }}>Selecciona una ciudad</em>
+                  }
                   sx={{ minHeight: 56 }}
                 >
                   <MenuItem value="" disabled>Selecciona una ciudad</MenuItem>
@@ -145,72 +172,76 @@ const AddProgramForm = ({ open, handleClose }) => {
                 </Select>
               </FormControl>
             </Grid>
-
             <Grid item xs={12} md={6}>
-              <FormControl fullWidth required>
-                <InputLabel id="study-area-label" shrink >Área de estudio</InputLabel>
+              <TextField
+                fullWidth
+                label="Sitio web"
+                variant="outlined"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                required
+                helperText="URL del sitio web de la universidad"
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Rango de matrícula (COP por semestre)"
+                variant="outlined"
+                value={tuitionRange}
+                onChange={(e) => setTuitionRange(e.target.value)}
+                required
+                helperText="Ejemplo: 3.000.000 - 8.000.000"
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Calificación (1-5)"
+                type="number"
+                variant="outlined"
+                value={rating}
+                onChange={(e) => setRating(Number(e.target.value))}
+                required
+                inputProps={{ min: 1, max: 5, step: 0.1 }}
+                helperText="Valoración promedio de la universidad"
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <FormControl fullWidth required variant="outlined" sx={{ minHeight: 70, justifyContent: 'center' }}>
+                <InputLabel id="modality-label" shrink>Modalidad</InputLabel>
                 <Select
-                  labelId="study-area-label"
-                  value={studyArea}
-                  onChange={(e) => setStudyArea(e.target.value)}
-                  label="Área de estudio"
-                  displayEmpty
-                  sx={{ minHeight: 56 }}
+                  labelId="modality-label"
+                  id="modality-select"
+                  multiple
+                  value={modality}
+                  onChange={(e) => setModality(typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value)}
+                  label="Modalidad"
                   renderValue={(selected) =>
-                    selected ? selected : <em style={{ color: '#888' }}>Selecciona un área</em>
+                    selected.length > 0 ? selected.join(', ') : <em style={{ color: '#888' }}>Selecciona modalidad(es)</em>
                   }
+                  MenuProps={{ PaperProps: { style: { maxHeight: 220 } } }}
+                  inputProps={{ 'aria-label': 'Modalidad' }}
+                  sx={{ minHeight: 56, display: 'flex', alignItems: 'center' }}
+                  InputLabelProps={{ shrink: true }}
                 >
-                  {studyAreas.map((area) => (
-                    <MenuItem key={area} value={area}>{area}</MenuItem>
+                  {modalityOptions.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
                   ))}
                 </Select>
               </FormControl>
             </Grid>
-
-            <Grid item xs={12} md={6}>
-                <FormControl fullWidth required variant="outlined">
-                  <InputLabel id="modality-label" shrink > Modalidad</InputLabel>
-                  <Select
-                    labelId="modality-label"
-                    id="modality-select"
-                    value={modality}
-                    onChange={(e) => setModality(e.target.value)}
-                    label="Modalidad"
-                    displayEmpty
-                    renderValue={(selected) =>
-                      selected ? selected : <em style={{ color: '#888' }}>Selecciona una modalidad</em>
-                    }
-                    sx={{
-                      minHeight: 56,
-                      '& .MuiSelect-select:focus': {
-                        backgroundColor: 'transparent',
-                      },
-                    }}
-                  >
-                    <MenuItem value="">
-                      <em>Selecciona una modalidad</em>
-                    </MenuItem>
-                    {modalityOptions.map((option) => (
-                      <MenuItem key={option} value={option}>
-                        {option}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-
-
-
-    
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
-                label="Matrícula aproximada"
+                label="Programas destacados (separados por coma)"
                 variant="outlined"
-                value={tuition}
-                onChange={(e) => setTuition(e.target.value)}
+                value={programs}
+                onChange={(e) => setPrograms(e.target.value)}
                 required
-                helperText="Rango de costo por semestre"
+                helperText="Ejemplo: Ingeniería, Medicina, Derecho"
               />
             </Grid>
             <Grid item xs={12}>
@@ -223,7 +254,7 @@ const AddProgramForm = ({ open, handleClose }) => {
                 required
                 multiline
                 rows={4}
-                helperText="Información relevante sobre el programa"
+                helperText="Información relevante sobre la universidad"
               />
             </Grid>
           </Grid>
@@ -238,7 +269,7 @@ const AddProgramForm = ({ open, handleClose }) => {
           variant="contained" 
           color="primary"
         >
-          Guardar programa
+          Guardar universidad
         </Button>
       </DialogActions>
     </Dialog>
@@ -273,6 +304,21 @@ const UniversitiesPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [, setTuitionRange] = useState([0, 15000000]);
   const [showAddProgram, setShowAddProgram] = useState(false);
+
+  // Permitir que el formulario agregue la universidad a la lista local
+  React.useEffect(() => {
+    window.refreshUniversities = async () => {
+      try {
+        const data = await fetchUniversities();
+        setUniversities(data);
+      } catch {
+        setUniversities([]);
+      }
+    };
+    return () => {
+      window.refreshUniversities = null;
+    };
+  }, []);
 
   // Filtrar universidades según los criterios
   const filteredUniversities = universities.filter((university) => {
